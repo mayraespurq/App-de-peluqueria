@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio — App de Peluquería</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #F0ECE4;
+    color: #1A1815;
+    -webkit-font-smoothing: antialiased;
+  }
+  .canvas-bg {
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.08) 1px, transparent 0);
+    background-size: 24px 24px;
+    background-color: #F0ECE4;
+  }
+  .sc-label {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: rgba(26,24,21,0.5);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .sc-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 22px;
+    color: #1A1815;
+    letter-spacing: -0.5px;
+    margin: 0;
+  }
+  .sc-sub {
+    font-size: 13px;
+    color: rgba(26,24,21,0.6);
+    max-width: 380px;
+    line-height: 1.5;
+    margin-top: 6px;
+  }
+  .connector {
+    display: flex;
+    align-items: center;
+    margin: 0 -20px;
+    z-index: 0;
+  }
+  .connector-line {
+    height: 1.5px;
+    flex: 1;
+    background: repeating-linear-gradient(to right, rgba(26,24,21,0.3) 0 6px, transparent 6px 12px);
+  }
+  .connector-arrow {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #1A1815; color: #FAF7F2;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  h1.deck {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: 48px; line-height: 1; letter-spacing: -1.4px;
+    margin: 0; color: #1A1815;
+  }
+</style>
+</head>
+<body>
+<div id="root" class="canvas-bg"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="components/Primitives.jsx"></script>
+<script type="text/babel" src="components/Screens1.jsx"></script>
+<script type="text/babel" src="components/Screens2.jsx"></script>
+
+<script type="text/babel">
+
+const HERO_IMAGE = 'https://d375139ucebi94.cloudfront.net/region2/es/4127/biz_photo/d8f39812fda74aa08fb9287f4ab87c-argeny-peluqueria-biz-photo-c633180347e440cc918db251638b5f-booksy.jpeg';
+
+// Override ScreenOnboarding para usar la imagen real
+function ScreenOnboardingWithHero({ accent, page = 0, goTo }) {
+  const pages = [
+    { eyebrow: '01 · Bienvenida', title: 'Tu próximo\ncorte, en 30\nsegundos.', sub: 'Reserva con tu estilista favorito sin llamadas, sin esperas.' },
+    { eyebrow: '02 · Elige', title: 'Los mejores\nestilistas de\ntu barrio.', sub: 'Perfiles, portfolio y reseñas reales. Tú decides.' },
+    { eyebrow: '03 · Disfruta', title: 'Recordatorios,\nreprograma con\nun toque.', sub: 'Nosotros nos encargamos del resto.' },
+  ];
+  const p = pages[page];
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#FAF7F2' }}>
+      <div style={{ height: 420, position: 'relative', margin: '62px 16px 0', borderRadius: 28, overflow: 'hidden' }}>
+        <div style={{
+          width: '100%', height: '100%',
+          backgroundImage: `url('${HERO_IMAGE}')`,
+          backgroundSize: 'cover', backgroundPosition: 'center',
+          display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start',
+          padding: 10,
+        }}>
+          <div style={{
+            fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
+            fontSize: 9, letterSpacing: 0.3,
+            color: 'rgba(0,0,0,0.45)',
+            textTransform: 'uppercase',
+          }}>hero · {p.eyebrow.split('·')[1].trim()}</div>
+        </div>
+        <div style={{
+          position: 'absolute', top: 18, left: 18,
+          fontFamily: 'ui-monospace, monospace', fontSize: 10,
+          letterSpacing: 1.2, color: '#fff',
+          background: 'rgba(0,0,0,0.4)', padding: '4px 10px', borderRadius: 999,
+          backdropFilter: 'blur(8px)',
+        }}>STUDIO</div>
+      </div>
+      <div style={{ padding: '36px 28px 0', flex: 1 }}>
+        <div style={{
+          fontFamily: 'ui-monospace, monospace', fontSize: 11,
+          letterSpacing: 1, color: accent, marginBottom: 14,
+        }}>{p.eyebrow}</div>
+        <h1 style={{
+          fontFamily: 'Fraunces, Georgia, serif', fontWeight: 400,
+          fontSize: 40, lineHeight: 1.02, letterSpacing: -1.2,
+          color: '#1A1815', margin: 0, whiteSpace: 'pre-line',
+        }}>{p.title}</h1>
+        <p style={{
+          fontFamily: 'Inter, system-ui, sans-serif', fontSize: 15,
+          lineHeight: 1.5, color: 'rgba(26,24,21,0.6)',
+          marginTop: 16, maxWidth: 280,
+        }}>{p.sub}</p>
+      </div>
+      <div style={{ padding: '0 20px 44px' }}>
+        <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 24 }}>
+          {pages.map((_, i) => (
+            <div key={i} style={{
+              height: 4, width: i === page ? 24 : 4,
+              borderRadius: 2,
+              background: i === page ? accent : 'rgba(0,0,0,0.15)',
+              transition: 'all 0.3s',
+            }} />
+          ))}
+        </div>
+        <Button full size="lg" accent={accent} onClick={() => goTo(page < 2 ? { onboardingPage: page + 1 } : { screen: 'login' })}>
+          {page < 2 ? 'Siguiente' : 'Empezar'}
+          <Icon name="arrowRight" size={18} />
+        </Button>
+        <div style={{ textAlign: 'center', marginTop: 14 }}>
+          <button onClick={() => goTo({ screen: 'login' })} style={{
+            background: 'none', border: 'none', fontSize: 14, color: 'rgba(26,24,21,0.5)',
+            fontFamily: 'Inter, sans-serif', cursor: 'pointer',
+          }}>Saltar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const SCREENS = [
+  { key: 'onboarding',   label: '01 Onboarding',    title: 'Onboarding',               sub: 'Pitch emocional en 3 pantallas. Objetivo: transmitir valor antes de pedir login.' },
+  { key: 'login',        label: '02 Login',         title: 'Login / Registro',          sub: 'Email + password + social. Validación en vivo. Un solo toggle entre login y registro.' },
+  { key: 'home',         label: '03 Home',          title: 'Home',                      sub: 'Hero con próximo turno (si existe) + acceso directo a servicios y estilistas destacados.' },
+  { key: 'reservar',     label: '04 Reservar',      title: 'Elegir servicio',          sub: 'Paso 1/3. Selección múltiple, total en vivo en el footer.' },
+  { key: 'profesional',  label: '05 Profesional',   title: 'Elegir profesional',       sub: 'Paso 2/3. Opción "cualquiera disponible" primero — atajo para usuarios sin preferencia.' },
+  { key: 'calendario',   label: '06 Calendario',    title: 'Fecha y hora',              sub: 'Paso 3/3. Franja de fechas + grid de slots. Feedback visual de no disponibles.' },
+  { key: 'confirmacion', label: '07 Confirmación',  title: 'Confirmación',              sub: 'Ticket con animación de check. Acciones post-reserva: calendario, compartir.' },
+  { key: 'perfil',       label: '08 Perfil',        title: 'Perfil',                    sub: 'Cuenta, preferencias, soporte. Stats rápidas y CTA a editar.' },
+];
+
+function ScreenFrame({ screenKey, state, setState, accent, dark }) {
+  const goTo = (patch) => setState(s => ({ ...s, ...patch }));
+  const setAuthMode = (mode) => setState(s => ({ ...s, authMode: mode }));
+  const setProId = (id) => setState(s => ({ ...s, proId: id }));
+  const setSlot = (slot) => setState(s => ({ ...s, slot }));
+  const toggleService = (id) => setState(s => ({
+    ...s,
+    services: s.services.includes(id) ? s.services.filter(x => x !== id) : [...s.services, id],
+  }));
+
+  switch (screenKey) {
+    case 'onboarding':
+      return <ScreenOnboardingWithHero accent={accent} page={state.onboardingPage || 0} goTo={goTo} />;
+    case 'login':
+      return <ScreenLogin accent={accent} goTo={goTo} mode={state.authMode || 'login'} setAuthMode={setAuthMode} />;
+    case 'home':
+      return <ScreenHome accent={accent} goTo={goTo} dark={dark} />;
+    case 'reservar':
+      return <ScreenReservar accent={accent} goTo={goTo} dark={dark}
+        selected={state.services} toggleService={toggleService} />;
+    case 'profesional':
+      return <ScreenProfesional accent={accent} goTo={goTo} dark={dark}
+        proId={state.proId} setProId={setProId} />;
+    case 'calendario':
+      return <ScreenCalendario accent={accent} goTo={goTo} dark={dark}
+        slot={state.slot} setSlot={setSlot} />;
+    case 'confirmacion':
+      return <ScreenConfirmacion accent={accent} goTo={goTo} dark={dark}
+        slot={state.slot} proId={state.proId} services={state.services} />;
+    case 'perfil':
+      return <ScreenPerfil accent={accent} goTo={goTo} dark={dark} />;
+    default: return null;
+  }
+}
+
+const initialStates = {
+  onboarding:   { onboardingPage: 0 },
+  login:        { authMode: 'login' },
+  home:         {},
+  reservar:     { services: ['c1', 'p1'] },
+  profesional:  { services: ['c1', 'p1'], proId: 'carla' },
+  calendario:   { services: ['c1', 'p1'], proId: 'carla', slot: { dateIdx: 1, time: '10:30' } },
+  confirmacion: { services: ['c1', 'p1'], proId: 'carla', slot: { dateIdx: 1, time: '10:30' } },
+  perfil:       {},
+};
+
+function ScreenCard({ def, accent, dark, idx, total }) {
+  const [state, setState] = React.useState(initialStates[def.key]);
+  return (
+    <div data-screen-label={def.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+      <div style={{
+        display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 14,
+      }}>
+        <div style={{
+          fontFamily: 'Fraunces, serif', fontSize: 46, color: 'rgba(26,24,21,0.15)',
+          letterSpacing: -1.5, lineHeight: 1,
+        }}>{String(idx + 1).padStart(2, '0')}</div>
+        <div>
+          <div className="sc-label">{def.label.split(' ').slice(1).join(' ').toUpperCase()}</div>
+          <h3 className="sc-title">{def.title}</h3>
+        </div>
+      </div>
+      <div style={{ boxShadow: '0 40px 100px rgba(0,0,0,0.12)', borderRadius: 48 }}>
+        <IOSDevice width={360} height={780} dark={dark}>
+          <ScreenFrame screenKey={def.key} state={state} setState={setState} accent={accent} dark={dark} />
+        </IOSDevice>
+      </div>
+      <p className="sc-sub" style={{ width: 360 }}>{def.sub}</p>
+    </div>
+  );
+}
+
+function Connector() {
+  return (
+    <div className="connector" style={{ width: 60, flexShrink: 0, marginTop: 430 }}>
+      <div className="connector-line" />
+      <div className="connector-arrow">›</div>
+      <div className="connector-line" />
+    </div>
+  );
+}
+
+function IntroBlock({ accent }) {
+  return (
+    <div style={{
+      width: 620, flexShrink: 0, paddingRight: 60, marginTop: 80,
+    }}>
+      <div style={{
+        fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: 2,
+        color: accent, marginBottom: 18,
+      }}>STUDIO — APP CONCEPT · v1</div>
+      <h1 className="deck">Prototipo de<br/>reserva de turnos<br/>para peluquería.</h1>
+      <p style={{
+        fontSize: 15, lineHeight: 1.55, color: 'rgba(26,24,21,0.65)',
+        marginTop: 22, maxWidth: 440,
+      }}>
+        8 pantallas interactivas en iOS, conectadas por un flujo lineal de 3 pasos
+        desde Home hasta la confirmación. Cada tarjeta es tocable — prueba a reservar.
+      </p>
+
+      <div style={{
+        marginTop: 34, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14,
+        maxWidth: 440,
+      }}>
+        {[
+          { n: '3', l: 'pasos\ndesde Home' },
+          { n: '8', l: 'pantallas\nhi-fi' },
+          { n: '45s', l: 'tiempo\nobjetivo' },
+          { n: '1', l: 'fricción\nprincipal' },
+        ].map((s, i) => (
+          <div key={i} style={{
+            padding: '16px 18px', borderRadius: 16,
+            background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(0,0,0,0.06)',
+          }}>
+            <div style={{ fontFamily: 'Fraunces, serif', fontSize: 34, letterSpacing: -1, color: '#1A1815' }}>{s.n}</div>
+            <div style={{ fontSize: 12, color: 'rgba(26,24,21,0.6)', whiteSpace: 'pre-line', marginTop: 2 }}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 40, maxWidth: 440 }}>
+        <div className="sc-label">Sistema visual</div>
+        <div style={{ display: 'flex', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
+          {[
+            { name: 'Fraunces', style: { fontFamily: 'Fraunces, serif', fontSize: 22, letterSpacing: -0.4 }, label: 'Display' },
+            { name: 'Inter', style: { fontFamily: 'Inter', fontSize: 15, fontWeight: 500 }, label: 'UI' },
+            { name: 'SF Mono', style: { fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: 1 }, label: 'Etiquetas' },
+          ].map((f, i) => (
+            <div key={i} style={{
+              padding: '12px 14px', borderRadius: 12,
+              background: '#fff', border: '1px solid rgba(0,0,0,0.06)', flex: 1, minWidth: 120,
+            }}>
+              <div style={f.style}>Aa</div>
+              <div style={{ fontSize: 10, color: 'rgba(26,24,21,0.5)', marginTop: 4, letterSpacing: 0.5 }}>
+                {f.name.toUpperCase()} · {f.label}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+          {[
+            { c: '#FAF7F2', name: 'Canvas' },
+            { c: '#1A1815', name: 'Tinta' },
+            { c: accent, name: 'Acento' },
+            { c: '#E8DFD3', name: 'Suave' },
+          ].map((c, i) => (
+            <div key={i} style={{ flex: 1 }}>
+              <div style={{
+                height: 44, borderRadius: 10, background: c.c,
+                border: '1px solid rgba(0,0,0,0.06)',
+              }} />
+              <div style={{ fontSize: 10, color: 'rgba(26,24,21,0.5)', marginTop: 6, letterSpacing: 0.5, textTransform: 'uppercase', fontFamily: 'ui-monospace, monospace' }}>
+                {c.name}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FlowBlock({ accent }) {
+  const steps = [
+    { t: 'Abrir app', n: 'Splash → Onboarding (primera vez) o Home (recurrente).' },
+    { t: 'Ver Home', n: 'Decisión: reservar ahora / ver próximo turno / explorar estilistas.' },
+    { t: 'Elegir servicio', n: 'Paso 1 — puede seleccionar varios (corte + color). Fricción: si no sabe qué quiere, ofrecemos "Explorar salón".' },
+    { t: 'Elegir profesional', n: 'Paso 2 — atajo "Cualquiera disponible" como primer item (reduce parálisis).' },
+    { t: 'Fecha y hora', n: 'Paso 3 — slots agrupados en mañana/tarde. No disponibles tachados (no escondidos), para que la reprogramación sea evidente.' },
+    { t: 'Confirmar', n: 'Check animado + ticket + CTAs (añadir al calendario, compartir). Sin upsell forzado.' },
+  ];
+  const frictions = [
+    'Si el usuario quiere un día concreto con un pro concreto y no hay slot, mostramos "próximo disponible con este pro" + "mismo día con otro pro".',
+    '"Cualquiera disponible" evita parálisis pero esconde reseñas — mitigado mostrando estilistas destacados en Home.',
+    'Selección múltiple de servicios podría complicar el cálculo de duración; el total se recalcula en vivo en el footer.',
+  ];
+  return (
+    <div style={{
+      width: 680, flexShrink: 0, marginTop: 80, paddingRight: 60,
+    }}>
+      <div style={{
+        fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: 2,
+        color: accent, marginBottom: 18,
+      }}>FLUJO DE USUARIO</div>
+      <h1 className="deck" style={{ fontSize: 40 }}>De abrir la app<br/>a confirmar turno,<br/>en 6 decisiones.</h1>
+
+      <div style={{ marginTop: 36, position: 'relative' }}>
+        {steps.map((s, i) => (
+          <div key={i} style={{ display: 'flex', gap: 18, marginBottom: 22, position: 'relative' }}>
+            <div style={{ flexShrink: 0, position: 'relative' }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: '50%',
+                background: '#1A1815', color: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'Fraunces, serif', fontSize: 15,
+              }}>{i + 1}</div>
+              {i < steps.length - 1 && <div style={{
+                position: 'absolute', top: 40, left: 17, bottom: -22, width: 1.5,
+                background: 'repeating-linear-gradient(to bottom, rgba(26,24,21,0.25) 0 4px, transparent 4px 8px)',
+              }} />}
+            </div>
+            <div style={{ flex: 1, paddingTop: 4 }}>
+              <div style={{
+                fontFamily: 'Fraunces, serif', fontSize: 20, letterSpacing: -0.3, color: '#1A1815',
+              }}>{s.t}</div>
+              <div style={{ fontSize: 13, color: 'rgba(26,24,21,0.62)', lineHeight: 1.55, marginTop: 4, maxWidth: 440 }}>{s.n}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 12, padding: '24px 26px', borderRadius: 20, background: '#1A1815', color: '#F5EFE4', maxWidth: 520 }}>
+        <div style={{ fontFamily: 'ui-monospace, monospace', fontSize: 10, letterSpacing: 2, color: accent, marginBottom: 10 }}>
+          FRICCIONES POTENCIALES
+        </div>
+        {frictions.map((f, i) => (
+          <div key={i} style={{ display: 'flex', gap: 10, marginTop: 10, fontSize: 13, lineHeight: 1.55, color: 'rgba(255,255,255,0.78)' }}>
+            <span style={{ color: accent, flexShrink: 0 }}>›</span>
+            <span>{f}</span>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 32 }}>
+        <div className="sc-label">Validación de coherencia</div>
+        <div style={{ display: 'flex', gap: 10, marginTop: 12, flexWrap: 'wrap', maxWidth: 520 }}>
+          {[
+            'Navegación lineal con paso 1 de 3 visible',
+            'Footer persistente con CTA y total',
+            'Back siempre accesible',
+            'Confirmación con acciones post-reserva',
+          ].map((v, i) => (
+            <div key={i} style={{
+              display: 'flex', gap: 8, padding: '8px 12px',
+              borderRadius: 999, background: 'rgba(255,255,255,0.6)',
+              border: '1px solid rgba(0,0,0,0.06)', fontSize: 12, color: '#1A1815',
+              alignItems: 'center',
+            }}>
+              <Icon name="check" size={12} color="#2E7D32" strokeWidth={2.5} />
+              {v}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const accent = t.accent;
+  const dark = t.dark;
+
+  return (
+    <>
+      <div style={{
+        display: 'flex', alignItems: 'flex-start',
+        padding: '80px 80px 120px',
+        overflowX: 'auto', minHeight: '100vh',
+        gap: 0,
+      }}>
+        <IntroBlock accent={accent} />
+
+        {SCREENS.map((def, i) => (
+          <React.Fragment key={def.key}>
+            <ScreenCard def={def} accent={accent} dark={dark} idx={i} total={SCREENS.length} />
+            {t.showFlow && i < SCREENS.length - 1 && <Connector />}
+          </React.Fragment>
+        ))}
+
+        <div style={{ width: 60, flexShrink: 0 }} />
+        <FlowBlock accent={accent} />
+      </div>
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Tema" />
+        <TweakColor label="Acento" value={t.accent}
+          onChange={(v) => setTweak('accent', v)} />
+        <TweakToggle label="Modo oscuro (Home/Reservar/Perfil)" value={t.dark}
+          onChange={(v) => setTweak('dark', v)} />
+        <TweakSection label="Canvas" />
+        <TweakToggle label="Mostrar conectores de flujo" value={t.showFlow}
+          onChange={(v) => setTweak('showFlow', v)} />
+        <TweakSection label="Paletas rápidas" />
+        <div style={{ display: 'flex', gap: 6 }}>
+          {[
+            { c: '#8A3B1F', n: 'Terracota' },
+            { c: '#1A1815', n: 'Noir' },
+            { c: '#3C5B3C', n: 'Oliva' },
+            { c: '#8E4A6C', n: 'Bordó' },
+            { c: '#C59D5F', n: 'Ámbar' },
+          ].map(p => (
+            <div key={p.c} onClick={() => setTweak('accent', p.c)} style={{
+              flex: 1, height: 28, borderRadius: 8, background: p.c,
+              cursor: 'pointer', border: t.accent === p.c ? '2px solid #1A1815' : '1px solid rgba(0,0,0,0.1)',
+            }} title={p.n} />
+          ))}
+        </div>
+      </TweaksPanel>
+    </>
+  );
+}
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "#8A3B1F",
+  "dark": false,
+  "view": "canvas",
+  "showFlow": true
+}/*EDITMODE-END*/;
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>
